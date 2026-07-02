@@ -1,0 +1,67 @@
+<div class="flex items-center justify-center min-h-[70vh]">
+  <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg text-center">
+    @if (loading) {
+      <div class="py-12">
+        <div
+          class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"
+        ></div>
+        <p class="text-gray-500">Connecting to server...</p>
+      </div>
+    } @else if (data) {
+      <div
+        class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6"
+      >
+        <span class="text-4xl">
+          {{ data['database'] === 'connected' ? '✅' : '⚠️' }}
+        </span>
+      </div>
+
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ data['app'] }}</h1>
+      <div
+        class="inline-block px-4 py-1 rounded-full text-sm font-medium mb-6"
+        [class.bg-green-100]="data['status'] === 'running'"
+        [class.text-green-700]="data['status'] === 'running'"
+      >
+        {{ data['status'] }}
+      </div>
+
+      <div class="space-y-3 text-left bg-gray-50 rounded-xl p-5">
+        <div class="flex justify-between">
+          <span class="text-gray-500">Greeting</span>
+          <span class="font-medium text-gray-800">{{ data['greeting'] }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Database</span>
+          <span
+            class="font-medium"
+            [class.text-green-600]="data['database'] === 'connected'"
+            [class.text-red-600]="data['database'] !== 'connected'"
+          >
+            {{ data['database'] }}
+          </span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Last checked</span>
+          <span class="font-medium text-gray-800">{{ now | date:'medium' }}</span>
+        </div>
+      </div>
+    } @else {
+      <div class="bg-red-50 text-red-700 px-4 py-3 rounded-lg">
+        Failed to connect to the server.
+      </div>
+    }
+
+    <button
+      (click)="fetch()"
+      class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg transition"
+    >
+      Refresh
+    </button>
+
+    @if (auth.isLoggedIn()) {
+      <p class="mt-4 text-sm text-gray-500">
+        Logged in as <span class="font-medium text-indigo-600">{{ auth.username() }}</span>
+      </p>
+    }
+  </div>
+</div>

@@ -1,0 +1,40 @@
+@if (ready) {
+  <nav class="bg-indigo-700 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a routerLink="/" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+          <span class="text-2xl">🏦</span>
+          CoreBank
+        </a>
+
+        <div class="flex items-center gap-4 text-sm">
+          <a routerLink="/hello" class="hover:text-indigo-200 transition">Health</a>
+
+          @if (auth.isLoggedIn()) {
+            <a routerLink="/dashboard" class="hover:text-indigo-200 transition">Dashboard</a>
+            <span class="text-indigo-300">|</span>
+            <span class="text-indigo-200">{{ auth.username() }}</span>
+            <button
+              (click)="auth.logout()"
+              class="bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg transition"
+            >
+              Logout
+            </button>
+          } @else {
+            <a routerLink="/login" class="hover:text-indigo-200 transition">Login</a>
+            <a
+              routerLink="/register"
+              class="bg-white text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-medium transition"
+            >
+              Register
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <router-outlet />
+  </main>
+}
