@@ -20,5 +20,31 @@ export const routes: Routes = [
     path: 'hello',
     loadComponent: () => import('./pages/hello.component').then((c) => c.HelloComponent),
   },
+  {
+    path: 'customers',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/customers.component').then((c) => c.CustomersComponent),
+      },
+      {
+        path: 'me',
+        loadComponent: () => import('./pages/my-profile.component').then((c) => c.MyProfileComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./pages/customer-form.component').then((c) => c.CustomerFormComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/customer-detail.component').then((c) => c.CustomerDetailComponent),
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./pages/customer-form.component').then((c) => c.CustomerFormComponent),
+      },
+    ],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];
