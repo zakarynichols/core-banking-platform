@@ -10,22 +10,23 @@ import jakarta.persistence.Table;
 @Table(name = "greetings")
 public class Greeting {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String message;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public Greeting() {}
+  private String message;
 
-    public Greeting(String message) {
-        this.message = message;
-    }
+  public Greeting() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Greeting(String message) {
+    this.message = message;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public Long getId() {
+    return id;
+  }
+
+  public String getMessage() {
+    return message;
+  }
 }
