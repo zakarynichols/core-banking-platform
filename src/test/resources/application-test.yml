@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+jwt:
+  secret: "test-secret-key-that-is-at-least-256-bits-long-for-hs256-in-test"
+  expiration: 86400000
