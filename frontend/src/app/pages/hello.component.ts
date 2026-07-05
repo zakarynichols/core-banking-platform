@@ -15,7 +15,7 @@ export class HelloComponent implements OnInit {
   now = new Date();
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
     public auth: AuthService,
   ) {}
 

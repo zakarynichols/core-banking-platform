@@ -71,7 +71,7 @@ export class CustomersComponent implements OnInit {
   customers: Customer[] = [];
   loading = true;
 
-  constructor(private service: CustomerService) {}
+  constructor(private readonly service: CustomerService) {}
 
   ngOnInit() {
     this.service.list().subscribe({

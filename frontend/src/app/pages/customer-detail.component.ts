@@ -173,13 +173,13 @@ export class CustomerDetailComponent implements OnInit, OnDestroy {
   searchResults: User[] = [];
   selectedUser: User | null = null;
   searchError = '';
-  private searchSubject = new Subject<string>();
-  private destroy$ = new Subject<void>();
+  private readonly searchSubject = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private service: CustomerService,
-    private route: ActivatedRoute,
-    private router: Router,
+    private readonly service: CustomerService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) {
     this.searchSubject
       .pipe(

@@ -68,9 +68,9 @@ export class CustomerFormComponent implements OnInit {
   editId?: number;
 
   constructor(
-    private service: CustomerService,
-    private router: Router,
-    private route: ActivatedRoute,
+    private readonly service: CustomerService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
   ) {}
 
   ngOnInit() {

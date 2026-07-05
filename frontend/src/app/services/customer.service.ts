@@ -23,7 +23,7 @@ export interface CustomerRequest {
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   list() {
     return this.http.get<Customer[]>('/api/customers');

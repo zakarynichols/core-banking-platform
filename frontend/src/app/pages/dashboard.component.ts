@@ -15,7 +15,7 @@ export class DashboardComponent {
 
   constructor(
     public auth: AuthService,
-    private http: HttpClient, 
+    private readonly http: HttpClient, 
   ) {}
 
   testHello() {

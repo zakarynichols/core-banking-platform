@@ -67,7 +67,7 @@ export class MyProfileComponent implements OnInit {
   error = '';
   auth = inject(AuthService);
 
-  constructor(private service: CustomerService) {}
+  constructor(private readonly service: CustomerService) {}
 
   ngOnInit() {
     this.service.myProfile().subscribe({
