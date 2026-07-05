@@ -17,3 +17,9 @@ jwt:
 
 server:
   port: 8080
+
+logging:
+  level:
+    org.springframework.security.web: DEBUG
+    org.springframework.web.filter.CorsFilter: TRACE
+    org.springframework.web.cors: TRACE
