@@ -50,7 +50,12 @@ public class CustomerController {
   public ResponseEntity<?> get(@PathVariable Long id) {
     return customerRepository
         .findById(id)
-        .map(c -> ResponseEntity.ok(CustomerResponse.from(c)))
+        .map(
+            c -> {
+              CustomerResponse resp = CustomerResponse.from(c);
+              resp.setLinkedUsers(toLinkedUsers(userRepository.findByCustomerId(id)));
+              return ResponseEntity.ok(resp);
+            })
         .orElse(ResponseEntity.notFound().build());
   }
 
@@ -85,7 +90,9 @@ public class CustomerController {
     targetUser.setCustomer(customer);
     userRepository.save(targetUser);
 
-    return ResponseEntity.ok(CustomerResponse.from(customer));
+    CustomerResponse resp = CustomerResponse.from(customer);
+    resp.setLinkedUsers(toLinkedUsers(userRepository.findByCustomerId(id)));
+    return ResponseEntity.ok(resp);
   }
 
   @PatchMapping("/{id}/status")
@@ -131,5 +138,14 @@ public class CustomerController {
               return ResponseEntity.ok(CustomerResponse.from(customer));
             })
         .orElse(ResponseEntity.notFound().build());
+  }
+
+  private List<CustomerResponse.LinkedUser> toLinkedUsers(List<User> users) {
+    return users.stream()
+        .map(
+            u ->
+                new CustomerResponse.LinkedUser(
+                    u.getId(), u.getUsername(), u.getEmail(), u.getFullName(), u.getRole().name()))
+        .toList();
   }
 }

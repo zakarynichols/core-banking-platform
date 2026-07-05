@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { User } from './user.service';
 
 export interface Customer {
   id: number;
@@ -10,6 +11,7 @@ export interface Customer {
   status: string;
   createdAt: string;
   updatedAt: string;
+  linkedUsers?: User[];
 }
 
 export interface CustomerRequest {
