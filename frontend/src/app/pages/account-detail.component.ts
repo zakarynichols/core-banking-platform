@@ -39,12 +39,26 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 
           <div class="space-y-4">
             <div class="flex justify-between py-2 border-b">
-              <span class="text-gray-500">Customer ID</span>
+              <span class="text-gray-500">Primary Owner</span>
               <a [routerLink]="['/customers', account.customerId]"
                 class="font-medium text-indigo-600 hover:text-indigo-800">
-                #{{ account.customerId }}
+                {{ account.primaryCustomerName }}
               </a>
             </div>
+            @if (account.holderIds && account.holderIds.length > 1) {
+              <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-500">Joint Holders</span>
+                <span class="font-medium text-gray-800">
+                  @for (hid of account.holderIds; track hid) {
+                    @if (hid !== account.customerId) {
+                      <a [routerLink]="['/customers', hid]"
+                        class="text-indigo-600 hover:text-indigo-800">{{ account.holderNames[hid] }}</a>
+                      @if (!$last) { <span class="text-gray-400">, </span> }
+                    }
+                  }
+                </span>
+              </div>
+            }
             <div class="flex justify-between py-2 border-b">
               <span class="text-gray-500">Account Type</span>
               <span class="font-medium text-gray-800">{{ account.accountType }}</span>

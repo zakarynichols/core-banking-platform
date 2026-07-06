@@ -27,14 +27,17 @@ public class AccountController {
   private final AccountRepository accountRepository;
   private final CustomerRepository customerRepository;
   private final UserRepository userRepository;
+  private final AccountHolderRepository accountHolderRepository;
 
   public AccountController(
       AccountRepository accountRepository,
       CustomerRepository customerRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository,
+      AccountHolderRepository accountHolderRepository) {
     this.accountRepository = accountRepository;
     this.customerRepository = customerRepository;
     this.userRepository = userRepository;
+    this.accountHolderRepository = accountHolderRepository;
   }
 
   @PostMapping
@@ -65,6 +68,17 @@ public class AccountController {
     Account account = new Account(accountNumber, customer, accountType);
     accountRepository.save(account);
 
+    accountHolderRepository.save(new AccountHolder(account, customer));
+
+    if (request.getAdditionalHolderIds() != null) {
+      for (Long holderId : request.getAdditionalHolderIds()) {
+        Customer holder = customerRepository.findById(holderId).orElse(null);
+        if (holder != null && !holder.getId().equals(customer.getId())) {
+          accountHolderRepository.save(new AccountHolder(account, holder));
+        }
+      }
+    }
+
     return ResponseEntity.status(HttpStatus.CREATED).body(AccountResponse.from(account));
   }
 
@@ -73,7 +87,7 @@ public class AccountController {
     User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
     List<Account> accounts;
     if (currentUser.getRole() == Role.CUSTOMER) {
-      accounts = accountRepository.findByCustomerId(currentUser.getCustomer().getId());
+      accounts = accountRepository.findByHolderCustomerId(currentUser.getCustomer().getId());
     } else {
       accounts = accountRepository.findAll();
     }
@@ -150,7 +164,12 @@ public class AccountController {
     if (user.getRole() != Role.CUSTOMER) {
       return true;
     }
-    return user.getCustomer().getId().equals(account.getCustomer().getId());
+    Long customerId = user.getCustomer().getId();
+    if (customerId.equals(account.getCustomer().getId())) {
+      return true;
+    }
+    return accountHolderRepository.findByAccountId(account.getId()).stream()
+        .anyMatch(h -> h.getId().getCustomerId().equals(customerId));
   }
 
   private String generateAccountNumber() {

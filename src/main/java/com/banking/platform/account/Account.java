@@ -1,6 +1,7 @@
 package com.banking.platform.account;
 
 import com.banking.platform.customer.Customer;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "accounts")
@@ -29,6 +33,9 @@ public class Account {
   @ManyToOne
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
+
+  @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AccountHolder> holders = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   @Column(name = "account_type", nullable = false, length = 20)
@@ -73,6 +80,10 @@ public class Account {
 
   public Customer getCustomer() {
     return customer;
+  }
+
+  public List<AccountHolder> getHolders() {
+    return holders;
   }
 
   public AccountType getAccountType() {

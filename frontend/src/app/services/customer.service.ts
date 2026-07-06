@@ -27,6 +27,10 @@ export class CustomerService {
     return this.http.get<Customer[]>('/api/customers');
   }
 
+  search(query: string) {
+    return this.http.get<Customer[]>('/api/customers/search', { params: { q: query } });
+  }
+
   get(id: number) {
     return this.http.get<Customer>(`/api/customers/${id}`);
   }

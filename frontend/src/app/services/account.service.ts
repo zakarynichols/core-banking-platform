@@ -5,17 +5,21 @@ export interface Account {
   id: number;
   accountNumber: string;
   customerId: number;
+  primaryCustomerName: string;
   accountType: string;
   status: string;
   balance: number;
   currency: string;
   createdAt: string;
   updatedAt: string;
+  holderIds: number[];
+  holderNames: Record<number, string>;
 }
 
 export interface AccountRequest {
   customerId: number;
   accountType: string;
+  additionalHolderIds?: number[];
 }
 
 @Injectable({ providedIn: 'root' })
