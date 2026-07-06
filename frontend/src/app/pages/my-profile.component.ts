@@ -1,7 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CustomerService, Customer } from '../services/customer.service';
-import { AuthService } from '../services/auth.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -12,13 +11,6 @@ import { DatePipe } from '@angular/common';
     <div class="max-w-2xl mx-auto">
       @if (loading) {
         <div class="text-center py-12 text-gray-500">Loading...</div>
-      } @else if (error) {
-        <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
-          <p class="text-gray-600 mb-4">{{ error }}</p>
-          @if (auth.role() === 'CUSTOMER') {
-            <p class="text-sm text-gray-500">Ask a bank employee to create a customer profile and link it to your account.</p>
-          }
-        </div>
       } @else if (customer) {
         <div class="bg-white rounded-2xl shadow-lg p-8">
           <div class="flex items-center justify-between mb-6">
@@ -64,18 +56,13 @@ import { DatePipe } from '@angular/common';
 export class MyProfileComponent implements OnInit {
   customer?: Customer;
   loading = true;
-  error = '';
-  auth = inject(AuthService);
 
   constructor(private readonly service: CustomerService) {}
 
   ngOnInit() {
     this.service.myProfile().subscribe({
       next: (c) => { this.customer = c; this.loading = false; },
-      error: () => {
-        this.error = 'No customer profile linked to your account.';
-        this.loading = false;
-      },
+      error: () => { this.loading = false; },
     });
   }
 }

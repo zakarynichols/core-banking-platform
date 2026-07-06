@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,7 +32,13 @@ public class CustomerController {
   }
 
   @PostMapping
-  public ResponseEntity<?> create(@Valid @RequestBody CustomerRequest request) {
+  public ResponseEntity<?> create(
+      @Valid @RequestBody CustomerRequest request, Authentication auth) {
+    User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
+    if (currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.EMPLOYEE) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(Map.of("error", "Only staff can create customers"));
+    }
     Customer customer =
         new Customer(
             request.getFullName(), request.getEmail(), request.getPhone(), request.getAddress());
@@ -46,53 +53,26 @@ public class CustomerController {
     return ResponseEntity.ok(customers);
   }
 
+  @GetMapping("/search")
+  public ResponseEntity<List<CustomerResponse>> search(@RequestParam String q) {
+    List<CustomerResponse> results =
+        customerRepository.search(q).stream().map(CustomerResponse::from).toList();
+    return ResponseEntity.ok(results);
+  }
+
   @GetMapping("/{id}")
-  public ResponseEntity<?> get(@PathVariable Long id) {
+  public ResponseEntity<CustomerResponse> get(@PathVariable Long id) {
     return customerRepository
         .findById(id)
-        .map(
-            c -> {
-              CustomerResponse resp = CustomerResponse.from(c);
-              resp.setLinkedUsers(toLinkedUsers(userRepository.findByCustomerId(id)));
-              return ResponseEntity.ok(resp);
-            })
+        .map(CustomerResponse::from)
+        .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping("/me")
-  public ResponseEntity<?> myProfile(Authentication auth) {
+  public ResponseEntity<CustomerResponse> myProfile(Authentication auth) {
     User user = userRepository.findByUsername(auth.getName()).orElseThrow();
-    if (user.getCustomer() == null) {
-      return ResponseEntity.notFound().build();
-    }
     return ResponseEntity.ok(CustomerResponse.from(user.getCustomer()));
-  }
-
-  @PutMapping("/{id}/link/{userId}")
-  public ResponseEntity<?> linkUser(
-      @PathVariable Long id, @PathVariable Long userId, Authentication auth) {
-    User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
-    if (currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.EMPLOYEE) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN)
-          .body(Map.of("error", "Only staff can link users"));
-    }
-
-    Customer customer = customerRepository.findById(id).orElse(null);
-    if (customer == null) {
-      return ResponseEntity.notFound().build();
-    }
-
-    User targetUser = userRepository.findById(userId).orElse(null);
-    if (targetUser == null) {
-      return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
-    }
-
-    targetUser.setCustomer(customer);
-    userRepository.save(targetUser);
-
-    CustomerResponse resp = CustomerResponse.from(customer);
-    resp.setLinkedUsers(toLinkedUsers(userRepository.findByCustomerId(id)));
-    return ResponseEntity.ok(resp);
   }
 
   @PatchMapping("/{id}/status")
@@ -138,14 +118,5 @@ public class CustomerController {
               return ResponseEntity.ok(CustomerResponse.from(customer));
             })
         .orElse(ResponseEntity.notFound().build());
-  }
-
-  private List<CustomerResponse.LinkedUser> toLinkedUsers(List<User> users) {
-    return users.stream()
-        .map(
-            u ->
-                new CustomerResponse.LinkedUser(
-                    u.getId(), u.getUsername(), u.getEmail(), u.getFullName(), u.getRole().name()))
-        .toList();
   }
 }

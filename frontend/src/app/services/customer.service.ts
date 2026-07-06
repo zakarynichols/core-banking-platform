@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from './user.service';
 
 export interface Customer {
   id: number;
@@ -11,7 +10,6 @@ export interface Customer {
   status: string;
   createdAt: string;
   updatedAt: string;
-  linkedUsers?: User[];
 }
 
 export interface CustomerRequest {
@@ -27,6 +25,10 @@ export class CustomerService {
 
   list() {
     return this.http.get<Customer[]>('/api/customers');
+  }
+
+  search(query: string) {
+    return this.http.get<Customer[]>('/api/customers/search', { params: { q: query } });
   }
 
   get(id: number) {
@@ -47,9 +49,5 @@ export class CustomerService {
 
   updateStatus(id: number, status: string) {
     return this.http.patch<Customer>(`/api/customers/${id}/status`, { status });
-  }
-
-  linkUser(customerId: number, userId: number) {
-    return this.http.put<Customer>(`/api/customers/${customerId}/link/${userId}`, {});
   }
 }

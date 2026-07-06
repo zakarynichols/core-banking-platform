@@ -1,5 +1,7 @@
 package com.banking.platform.auth;
 
+import com.banking.platform.customer.Customer;
+import com.banking.platform.customer.CustomerRepository;
 import com.banking.platform.user.Role;
 import com.banking.platform.user.User;
 import com.banking.platform.user.UserRepository;
@@ -18,12 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final UserRepository userRepository;
+  private final CustomerRepository customerRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtUtil jwtUtil;
 
   public AuthController(
-      UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+      UserRepository userRepository,
+      CustomerRepository customerRepository,
+      PasswordEncoder passwordEncoder,
+      JwtUtil jwtUtil) {
     this.userRepository = userRepository;
+    this.customerRepository = customerRepository;
     this.passwordEncoder = passwordEncoder;
     this.jwtUtil = jwtUtil;
   }
@@ -37,6 +44,9 @@ public class AuthController {
       return ResponseEntity.badRequest().body(Map.of("error", "Email already taken"));
     }
 
+    Customer customer = new Customer(request.getFullName(), request.getEmail(), null, null);
+    customerRepository.save(customer);
+
     User user =
         new User(
             request.getUsername(),
@@ -44,6 +54,7 @@ public class AuthController {
             passwordEncoder.encode(request.getPassword()),
             request.getFullName(),
             Role.CUSTOMER);
+    user.setCustomer(customer);
     userRepository.save(user);
 
     String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());

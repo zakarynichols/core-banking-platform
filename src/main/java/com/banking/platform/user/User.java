@@ -39,8 +39,8 @@ public class User {
   @Column(nullable = false, length = 20)
   private Role role = Role.CUSTOMER;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id")
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
   @Column(name = "created_at", nullable = false, updatable = false)
