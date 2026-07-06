@@ -46,5 +46,23 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'accounts',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/accounts.component').then((c) => c.AccountsComponent),
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./pages/account-form.component').then((c) => c.AccountFormComponent),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/account-detail.component').then((c) => c.AccountDetailComponent),
+      },
+    ],
+  },
   { path: '**', redirectTo: '/dashboard' },
 ];

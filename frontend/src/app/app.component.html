@@ -10,12 +10,13 @@
         <div class="flex items-center gap-4 text-sm">
           <a routerLink="/hello" class="hover:text-indigo-200 transition">Health</a>
 
-          @if (auth.isLoggedIn()) {
-            <a routerLink="/dashboard" class="hover:text-indigo-200 transition">Dashboard</a>
-            @if (auth.role() === 'ADMIN' || auth.role() === 'EMPLOYEE') {
-              <a routerLink="/customers" class="hover:text-indigo-200 transition">Customers</a>
-            }
-            <a routerLink="/customers/me" class="hover:text-indigo-200 transition">My Profile</a>
+            @if (auth.isLoggedIn()) {
+              <a routerLink="/dashboard" class="hover:text-indigo-200 transition">Dashboard</a>
+              <a routerLink="/accounts" class="hover:text-indigo-200 transition">Accounts</a>
+              @if (auth.role() === 'ADMIN' || auth.role() === 'EMPLOYEE') {
+                <a routerLink="/customers" class="hover:text-indigo-200 transition">Customers</a>
+              }
+              <a routerLink="/customers/me" class="hover:text-indigo-200 transition">My Profile</a>
             <span class="text-indigo-300">|</span>
             <span class="text-indigo-200">{{ auth.username() }}</span>
             <button
