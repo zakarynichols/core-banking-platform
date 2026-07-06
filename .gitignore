@@ -41,8 +41,8 @@ Thumbs.db
 ### Logs ###
 *.log
 
-### Phases to implement ###
-phases
+### temporary ###
+tmp
 
 node_modules/
 
