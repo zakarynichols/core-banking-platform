@@ -93,7 +93,6 @@ export class AccountFormComponent implements OnInit {
           this.loadingProfile = false;
         },
         error: () => {
-          this.error = 'No customer profile found. Please contact staff to link your account.';
           this.loadingProfile = false;
         },
       });

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CustomerService, Customer } from '../services/customer.service';
+import { AuthService } from '../services/auth.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -11,10 +12,12 @@ import { DatePipe } from '@angular/common';
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-800">Customers</h1>
-        <a routerLink="/customers/new"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-          + New Customer
-        </a>
+        @if (isStaff) {
+          <a routerLink="/customers/new"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+            + New Customer
+          </a>
+        }
       </div>
 
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -70,10 +73,13 @@ import { DatePipe } from '@angular/common';
 export class CustomersComponent implements OnInit {
   customers: Customer[] = [];
   loading = true;
+  isStaff = false;
+  auth = inject(AuthService);
 
   constructor(private readonly service: CustomerService) {}
 
   ngOnInit() {
+    this.isStaff = this.auth.role() === 'ADMIN' || this.auth.role() === 'EMPLOYEE';
     this.service.list().subscribe({
       next: (res) => { this.customers = res; this.loading = false; },
       error: () => { this.loading = false; },

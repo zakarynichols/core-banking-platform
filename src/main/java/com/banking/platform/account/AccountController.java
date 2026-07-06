@@ -47,8 +47,7 @@ public class AccountController {
     }
 
     if (currentUser.getRole() == Role.CUSTOMER) {
-      if (currentUser.getCustomer() == null
-          || !currentUser.getCustomer().getId().equals(request.getCustomerId())) {
+      if (!currentUser.getCustomer().getId().equals(request.getCustomerId())) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(Map.of("error", "You can only open accounts for yourself"));
       }
@@ -74,9 +73,6 @@ public class AccountController {
     User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
     List<Account> accounts;
     if (currentUser.getRole() == Role.CUSTOMER) {
-      if (currentUser.getCustomer() == null) {
-        return ResponseEntity.ok(List.of());
-      }
       accounts = accountRepository.findByCustomerId(currentUser.getCustomer().getId());
     } else {
       accounts = accountRepository.findAll();
@@ -154,8 +150,7 @@ public class AccountController {
     if (user.getRole() != Role.CUSTOMER) {
       return true;
     }
-    return user.getCustomer() != null
-        && user.getCustomer().getId().equals(account.getCustomer().getId());
+    return user.getCustomer().getId().equals(account.getCustomer().getId());
   }
 
   private String generateAccountNumber() {

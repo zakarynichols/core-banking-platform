@@ -1,7 +1,6 @@
 package com.banking.platform.customer;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class CustomerResponse {
 
@@ -13,7 +12,6 @@ public class CustomerResponse {
   private String status;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
-  private List<LinkedUser> linkedUsers;
 
   public static CustomerResponse from(Customer customer) {
     CustomerResponse r = new CustomerResponse();
@@ -58,49 +56,5 @@ public class CustomerResponse {
 
   public LocalDateTime getUpdatedAt() {
     return updatedAt;
-  }
-
-  public List<LinkedUser> getLinkedUsers() {
-    return linkedUsers;
-  }
-
-  public void setLinkedUsers(List<LinkedUser> linkedUsers) {
-    this.linkedUsers = linkedUsers;
-  }
-
-  public static class LinkedUser {
-    private Long id;
-    private String username;
-    private String email;
-    private String fullName;
-    private String role;
-
-    public LinkedUser(Long id, String username, String email, String fullName, String role) {
-      this.id = id;
-      this.username = username;
-      this.email = email;
-      this.fullName = fullName;
-      this.role = role;
-    }
-
-    public Long getId() {
-      return id;
-    }
-
-    public String getUsername() {
-      return username;
-    }
-
-    public String getEmail() {
-      return email;
-    }
-
-    public String getFullName() {
-      return fullName;
-    }
-
-    public String getRole() {
-      return role;
-    }
   }
 }
