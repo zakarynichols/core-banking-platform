@@ -24,6 +24,7 @@ class AccountControllerTest extends AbstractIntegrationTest {
 
   @Autowired private TestRestTemplate rest;
   @Autowired private AccountRepository accountRepository;
+  @Autowired private AccountHolderRepository accountHolderRepository;
   @Autowired private CustomerRepository customerRepository;
   @Autowired private UserRepository userRepository;
   @Autowired private JwtUtil jwtUtil;
@@ -36,12 +37,10 @@ class AccountControllerTest extends AbstractIntegrationTest {
 
   @BeforeEach
   void setUp() {
+    accountHolderRepository.deleteAll();
     accountRepository.deleteAll();
-    User cu = userRepository.findByUsername("customer").orElseThrow();
-    cu.setCustomer(null);
-    userRepository.save(cu);
-    customerRepository.deleteAll();
 
+    // Create fresh customers (avoid accessing lazy proxies on seeded users)
     Customer c = customerRepository.save(new Customer("Jane Doe", "jane@test.com", "123", "Addr"));
     customerId = c.getId();
 
@@ -49,9 +48,14 @@ class AccountControllerTest extends AbstractIntegrationTest {
         customerRepository.save(new Customer("Staff Customer", "staffcust@test.com", null, null));
     employeeCustomerId = ec.getId();
 
-    User customerUser = userRepository.findByUsername("customer").orElseThrow();
-    customerUser.setCustomer(c);
-    userRepository.save(customerUser);
+    // Point existing seeded users to the new customers
+    User cu = userRepository.findByUsername("customer").orElseThrow();
+    cu.setCustomer(c);
+    userRepository.save(cu);
+
+    User eu = userRepository.findByUsername("employee").orElseThrow();
+    eu.setCustomer(ec);
+    userRepository.save(eu);
 
     adminToken = jwtUtil.generateToken("admin", "ADMIN");
     employeeToken = jwtUtil.generateToken("employee", "EMPLOYEE");
